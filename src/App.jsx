@@ -105,7 +105,7 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          
+
           question: finalQuestion,
           frames,
         }),
@@ -125,6 +125,8 @@ function App() {
           content: data.answer,
         },
       ]);
+      
+      speakText(data.answer);
 
       setQuestion("");
 
@@ -176,6 +178,22 @@ function App() {
     recognition.onend = () => {
       setListening(false);
     };
+  };
+
+  const speakText = (text) => {
+    if (!window.speechSynthesis) {
+      setError("当前浏览器不支持语音播报功能。");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "zh-CN";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    window.speechSynthesis.speak(utterance);
   };
 
 
