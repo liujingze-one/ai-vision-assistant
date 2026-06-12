@@ -9,6 +9,8 @@ function App() {
   const [error, setError] = useState("");
   const [question, setQuestion] = useState("");
   const [capturedFrames, setCapturedFrames] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const startCamera = async () => {
     try {
@@ -79,12 +81,56 @@ function App() {
       return;
     }
 
-    setError("");
+    try {
+      setError("");
+      setLoading(true);
 
-    const frames = await captureMultipleFrames();
+      const currentQuestion = question;
 
-    console.log("用户问题：", question);
-    console.log("自动捕获的多帧画面：", frames);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: currentQuestion,
+        },
+      ]);
+
+      const frames = await captureMultipleFrames();
+
+      const response = await fetch("http://localhost:3001/api/vision-chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question,
+          frames,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "AI调用失败");
+      }
+
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          content: data.answer,
+        },
+      ]);
+
+      setQuestion("");
+
+    } catch (err) {
+      setError("AI回答失败，请检查后端服务或 API Key。");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -113,7 +159,7 @@ function App() {
           <div className="message user-message">
             <strong>用户：</strong>
             <span>
-              输入问题后点击发送，系统会自动从摄像头视频中捕获连续三帧画面。
+              输入问题后点击发送，系统会自动从摄像头视频中捕获连续三帧画面，并交给 Gemini 进行视觉理解。
             </span>
           </div>
 
@@ -132,6 +178,27 @@ function App() {
               </div>
             </div>
           )}
+
+          {loading && (
+            <div className="message ai-message">
+              <strong>AI：</strong>
+              <span>正在分析摄像头画面...</span>
+            </div>
+          )}
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`message ${message.role === "user" ? "user-message" : "ai-message"
+                }`}
+            >
+              <strong>
+                {message.role === "user" ? "用户：" : "AI："}
+              </strong>
+              <span>{message.content}</span>
+            </div>
+          ))}
+
+
         </div>
       </div>
 
@@ -141,8 +208,15 @@ function App() {
           placeholder="请输入问题..."
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleAsk();
+            }
+          }}
         />
-        <button onClick={handleAsk}>发送</button>
+        <button onClick={handleAsk} disabled={loading}>
+          {loading ? "分析中..." : "发送"}
+        </button>
       </div>
     </div>
   );
