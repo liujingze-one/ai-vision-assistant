@@ -11,6 +11,7 @@ function App() {
   const [capturedFrames, setCapturedFrames] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [listening, setListening] = useState(false);
 
   const startCamera = async () => {
     try {
@@ -70,8 +71,9 @@ function App() {
     return frames;
   };
 
-  const handleAsk = async () => {
-    if (!question.trim()) {
+  const handleAsk = async (voiceQuestion = null) => {
+    const finalQuestion = voiceQuestion || question;
+    if (!finalQuestion.trim()) {
       setError("请输入问题。");
       return;
     }
@@ -91,7 +93,7 @@ function App() {
         ...prev,
         {
           role: "user",
-          content: currentQuestion,
+          content: finalQuestion,
         },
       ]);
 
@@ -103,7 +105,8 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question,
+          
+          question: finalQuestion,
           frames,
         }),
       });
@@ -132,6 +135,50 @@ function App() {
       setLoading(false);
     }
   };
+
+  const startListening = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setError("当前浏览器不支持语音识别，请使用 Chrome 或 Edge 浏览器。");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "zh-CN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    setError("");
+    setListening(true);
+    recognition.start();
+
+
+
+    recognition.onresult = async (event) => {
+      const transcript = event.results[0][0].transcript;
+
+      setQuestion(transcript);
+      setListening(false);
+
+      await handleAsk(transcript);
+    };
+
+
+    recognition.onerror = (event) => {
+      setError("语音识别失败，请检查麦克风权限。");
+      setListening(false);
+      console.error(event);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+  };
+
+
 
   return (
     <div className="app">
@@ -202,6 +249,7 @@ function App() {
         </div>
       </div>
 
+
       <div className="input-bar">
         <input
           type="text"
@@ -214,7 +262,12 @@ function App() {
             }
           }}
         />
-        <button onClick={handleAsk} disabled={loading}>
+
+        <button onClick={startListening} disabled={listening || loading}>
+          {listening ? "识别中..." : "语音输入"}
+        </button>
+
+        <button onClick={() => handleAsk()} disabled={loading}>
           {loading ? "分析中..." : "发送"}
         </button>
       </div>
