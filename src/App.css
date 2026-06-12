@@ -70,6 +70,10 @@ body {
   cursor: pointer;
 }
 
+.hidden-canvas {
+  display: none;
+}
+
 .error-text {
   color: #d93025;
   font-size: 14px;
@@ -77,6 +81,40 @@ body {
 
 .chat-panel {
   overflow-y: auto;
+}
+
+.chat-panel h2 {
+  margin-bottom: 16px;
+}
+
+.message {
+  background: #f1f3f5;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.frame-preview {
+  margin-top: 16px;
+}
+
+.frame-preview p {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.frame-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.frame-grid img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
 .input-bar {
