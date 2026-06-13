@@ -200,7 +200,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>AI Visual Assistant</h1>
+      <h1>🎥 AI Vision Assistant</h1>
 
       <div className="main-container">
         <div className="camera-panel">
@@ -210,7 +210,7 @@ function App() {
           </div>
 
           <button className="camera-button" onClick={startCamera}>
-            开始对话
+            📷 开启摄像头
           </button>
 
           <canvas ref={canvasRef} className="hidden-canvas" />
@@ -219,12 +219,12 @@ function App() {
         </div>
 
         <div className="chat-panel">
-          <h2>Chat Area</h2>
+          <h2>AI Conversation</h2>
 
           <div className="message user-message">
             <strong>用户：</strong>
             <span>
-              输入问题后点击发送，系统会自动从摄像头视频中捕获连续三帧画面，并交给 Gemini 进行视觉理解。
+              🎤 点击“语音输入”直接提问，系统会自动采集摄像头画面，并由 AI 返回文字与语音回答。
             </span>
           </div>
 
@@ -282,11 +282,11 @@ function App() {
         />
 
         <button onClick={startListening} disabled={listening || loading}>
-          {listening ? "识别中..." : "语音输入"}
+          {listening ? "识别中..." : "🎤 语音输入"}
         </button>
 
         <button onClick={() => handleAsk()} disabled={loading}>
-          {loading ? "分析中..." : "发送"}
+          {loading ? "分析中..." : "📤 发送"}
         </button>
       </div>
     </div>
