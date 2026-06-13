@@ -276,14 +276,14 @@ npm install
 
 ## 配置环境变量
 
-创建：
+在项目根目录创建：
 
 .env
 
-填写：
+并填写自己的 Google AI Studio API Key：
 
 ```env
-GEMINI_API_KEY=your_api_key
+GEMINI_API_KEY=your_google_ai_studio_api_key
 ```
 
 ## 启动后端
