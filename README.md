@@ -8,6 +8,10 @@ AI Vision Assistant 是一个基于 Google Gemini 多模态模型构建的智能
 
 用户只需开启摄像头并通过语音提问，系统即可自动采集当前视频画面、理解用户问题，并以文字和语音的形式返回回答。
 
+## 🎬 Demo 视频
+
+https://www.bilibili.com/video/BV1fvJw6REfN/?spm_id_from=333.1387.upload.video_card.click&vd_source=089401c16487ef62d09a70f780cdea2e
+
 ---
 
 # 项目功能
